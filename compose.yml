@@ -1,0 +1,11 @@
+services:
+  rss-generator:
+    build: .
+    ports:
+      - "3021:3000"
+    volumes:
+      - ./src:/app/src
+    environment:
+      - EXCLUDE_WORDS=Soutenance
+    entrypoint: sh
+    command: -c "npm run dev"
