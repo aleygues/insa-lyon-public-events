@@ -32,14 +32,19 @@ async function fetchHTML(url: string): Promise<string> {
 // French month abbreviations to English mapping
 const frenchMonths: Record<string, string> = {
   "jan": "Jan",
+  "janv": "Jan",
   "fév": "Feb",
+  "févr": "Feb",
   "mar": "Mar",
+  "mars": "Mar",
   "avr": "Apr",
   "mai": "May",
   "juin": "Jun",
   "juil": "Jul",
   "août": "Aug",
+  "aou": "Aug",
   "sep": "Sep",
+  "sept": "Sep",
   "oct": "Oct",
   "nov": "Nov",
   "déc": "Dec"
@@ -51,14 +56,15 @@ async function parseHTML(html: string): Promise<Output> {
   const events: Event[] = [];
 
   // Extract events from the calendar
-  $("div.event").each((index, element) => {
-    const day = $(element).find(".jour").text().trim().replace(/\s+/g, " ").trim();
-    let month = $(element).find(".mois").text().trim().replace(/\s+/g, " ").trim();
-    let label = $(element).find("h4 a").text().trim().replace(/\s+/g, " ").trim();
+  $("a.cell.as--event").each((index, element) => {
+    const dateText = $(element).find(".bright").text().trim().replace(/\s+/g, " ");
+    const [day, rawMonth] = dateText.split(" ");
+    let month = rawMonth;
+    const label = $(element).find(".cell-title-event").text().trim().replace(/\s+/g, " ");
     
     if (day && month && label) {
       // Map French month to English for date-fns parsing
-      month = frenchMonths[month.toLowerCase()] || month;
+      month = frenchMonths[month.toLowerCase().replace(/\.$/, "")] || month;
       
       // Create a date string for parsing
       const year = new Date().getFullYear();
